@@ -3,15 +3,18 @@
     "target": "es2022",
     "lib": ["es2023"],
 
+    "module": "Node16",
+    "moduleResolution": "Node16", //Adicionado depois para fazer um teste
+
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     },
 
-    "module": "node16",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-
     "strict": true,
     "skipLibCheck": true
-  }
+  },
+  "include": ["src"] //Adicionado depois para fazer um teste
 }
