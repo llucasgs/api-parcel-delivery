@@ -3,6 +3,8 @@ import { z } from "zod";
 import { compare } from "bcrypt";
 import { prisma } from "@/database/prisma";
 import { AppError } from "@/utils/AppError";
+import { sign } from "jsonwebtoken";
+import { authConfig } from "@/config/auth";
 
 class SessionsController {
   create = async (request: Request, response: Response) => {
@@ -13,9 +15,7 @@ class SessionsController {
 
     const { email, password } = bodySchema.parse(request.body);
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
       throw new AppError("Invalid e-mail or password", 401);
@@ -27,7 +27,19 @@ class SessionsController {
       throw new AppError("Invalid e-mail or password", 401);
     }
 
-    return response.status(201).json({ message: "ok" });
+    const { secret, expiresIn } = authConfig.jwt;
+
+    const token = sign({ role: user.role }, secret, {
+      subject: user.id,
+      expiresIn,
+    });
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    return response.json({
+      user: userWithoutPassword,
+      token,
+    });
   };
 }
 
