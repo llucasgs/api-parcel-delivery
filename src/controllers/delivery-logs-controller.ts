@@ -5,7 +5,6 @@ import { AppError } from "@/utils/AppError";
 
 class DeliveryLogsController {
   create = async (request: Request, response: Response) => {
-    // Validar params
     const bodySchema = z.object({
       // ID da entrega
       delivery_id: z
@@ -32,7 +31,7 @@ class DeliveryLogsController {
       throw new AppError("Change status to shipped");
     }
 
-    const logs = await prisma.deliveryLog.create({
+    const log = await prisma.deliveryLog.create({
       data: {
         deliveryId: delivery_id,
         description,
@@ -40,6 +39,39 @@ class DeliveryLogsController {
     });
 
     return response.status(201).json();
+  };
+
+  show = async (request: Request, response: Response) => {
+    const paramsSchema = z.object({
+      // ID da entrega
+      delivery_id: z
+        .string({ required_error: "Deliveries ID is required!" })
+        .uuid(),
+    });
+
+    const { delivery_id } = paramsSchema.parse(request.params);
+
+    const delivery = await prisma.delivery.findUnique({
+      where: {
+        id: delivery_id,
+      },
+      include: {
+        user: true,
+        logs: true,
+      },
+    });
+
+    if (
+      request.user?.role === "customer" &&
+      request.user.id !== delivery?.userId
+    ) {
+      throw new AppError(
+        "Forbidden: insufficient permissions. The user can only view their deliveries",
+        401
+      );
+    }
+
+    return response.json(delivery);
   };
 }
 
