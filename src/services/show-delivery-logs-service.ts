@@ -1,7 +1,10 @@
-import { z } from "zod";
 import { AppError } from "@/utils/AppError";
 import { DeliveriesRepository } from "@/repositories/deliveries-repository";
 import { DeliveryLogsRepository } from "@/repositories/delivery-logs-repository";
+import {
+  showDeliveryLogSchema,
+  ShowDeliveryLogDTO,
+} from "@/schemas/deliveries-logs/show-delivery-log-schema";
 
 export class ShowDeliveryLogsService {
   constructor(
@@ -9,14 +12,8 @@ export class ShowDeliveryLogsService {
     private deliveryLogsRepository: DeliveryLogsRepository
   ) {}
 
-  async execute(data: { delivery_id: string; user_id: string; role: string }) {
-    const schema = z.object({
-      delivery_id: z.string().uuid(),
-      user_id: z.string().uuid(),
-      role: z.string(),
-    });
-
-    const { delivery_id, role, user_id } = schema.parse(data);
+  async execute(data: ShowDeliveryLogDTO) {
+    const { delivery_id, user_id, role } = showDeliveryLogSchema.parse(data);
 
     const delivery = await this.deliveriesRepository.findById(delivery_id);
 
@@ -24,10 +21,10 @@ export class ShowDeliveryLogsService {
       throw new AppError("Delivery not found", 404);
     }
 
-    // customer só pode ver pedidos dele mesmo
+    // Cliente só pode ver entregas dele mesmo
     if (role === "customer" && delivery.userId !== user_id) {
       throw new AppError(
-        "Forbidden: customers can only view their deliveries",
+        "You are not allowed to view logs of another customer's delivery",
         403
       );
     }

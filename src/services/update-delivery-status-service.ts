@@ -1,9 +1,7 @@
-import { z } from "zod";
 import { AppError } from "@/utils/AppError";
 import { DeliveriesRepository } from "@/repositories/deliveries-repository";
 import { DeliveryLogsRepository } from "@/repositories/delivery-logs-repository";
-import { DeliveryStatus } from "@prisma/client";
-import { DeliveryStatusLoggerService } from "./delivery-status-logger-service";
+import { deliveryUpdateStatusSchema } from "@/schemas/deliveries/update-delivery-status-schema";
 
 export class UpdateDeliveryStatusService {
   constructor(
@@ -12,28 +10,20 @@ export class UpdateDeliveryStatusService {
   ) {}
 
   async execute(data: { id: string; status: string; performedBy: string }) {
-    const schema = z.object({
-      id: z.string().uuid(),
-      status: z.nativeEnum(DeliveryStatus),
-      performedBy: z.string().uuid(),
-    });
-
-    const { id, status, performedBy } = schema.parse(data);
+    const { id, status, performedBy } = deliveryUpdateStatusSchema.parse(data);
 
     const delivery = await this.deliveriesRepository.findById(id);
     if (!delivery) {
       throw new AppError("Delivery not found", 404);
     }
 
-    // Atualiza a entrega
+    // 1. Atualizar entrega
     const updated = await this.deliveriesRepository.updateStatus(id, status);
 
-    // Usa o novo logger centralizado
-    const logger = new DeliveryStatusLoggerService(this.logsRepository);
-
-    await logger.createStatusLog({
+    // 2. Criar log automaticamente
+    await this.logsRepository.create({
       deliveryId: id,
-      status,
+      description: status,
       performedBy,
     });
 

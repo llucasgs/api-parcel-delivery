@@ -24,7 +24,7 @@ export class PrismaDeliveriesRepository implements DeliveriesRepository {
   async updateStatus(id: string, status: DeliveryStatus): Promise<Delivery> {
     return prisma.delivery.update({
       where: { id },
-      data: { status }, // agora status é DeliveryStatus, não string solta
+      data: { status },
     });
   }
 }

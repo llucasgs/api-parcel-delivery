@@ -5,7 +5,7 @@ import { authConfig } from "@/config/auth";
 import { AppError } from "@/utils/AppError";
 
 interface TokenPayload {
-  role: string;
+  role: "sale" | "customer";
   sub: string;
 }
 

@@ -4,6 +4,7 @@ import { PrismaDeliveryLogsRepository } from "@/repositories/prisma/prisma-deliv
 
 import { DeliveryLogService } from "@/services/delivery-log-service";
 import { ShowDeliveryLogsService } from "@/services/show-delivery-logs-service";
+import { ok, created } from "@/utils/response";
 
 class DeliveryLogsController {
   create = async (request: Request, response: Response) => {
@@ -21,7 +22,9 @@ class DeliveryLogsController {
       performedBy: request.user!.id,
     });
 
-    return response.status(201).json(log);
+    return response
+      .status(201)
+      .json(created("Delivery log created successfully", log));
   };
 
   show = async (request: Request, response: Response) => {
@@ -39,7 +42,7 @@ class DeliveryLogsController {
       role: request.user!.role,
     });
 
-    return response.json(logs);
+    return response.json(ok("Delivery logs fetched successfully", logs));
   };
 }
 

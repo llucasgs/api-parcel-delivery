@@ -4,6 +4,8 @@ export class DeliveryListService {
   constructor(private deliveriesRepository: DeliveriesRepository) {}
 
   async execute() {
-    return this.deliveriesRepository.findAll();
+    const deliveries = await this.deliveriesRepository.findAll();
+
+    return deliveries;
   }
 }

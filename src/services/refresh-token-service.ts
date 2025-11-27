@@ -1,10 +1,15 @@
-import { AppError } from "@/utils/AppError";
 import { sign } from "jsonwebtoken";
-import { z } from "zod";
+
+import { AppError } from "@/utils/AppError";
+import { authConfig } from "@/config/auth";
 
 import { UsersRepository } from "@/repositories/users-repository";
 import { RefreshTokensRepository } from "@/repositories/refresh-tokens-repository";
-import { authConfig } from "@/config/auth";
+
+import {
+  refreshTokenSchema,
+  RefreshTokenDTO,
+} from "@/schemas/sessions/refresh-token-schema";
 
 export class RefreshTokenService {
   constructor(
@@ -12,15 +17,11 @@ export class RefreshTokenService {
     private refreshTokensRepository: RefreshTokensRepository
   ) {}
 
-  async execute(data: { refresh_token: string }) {
-    // 1. Valida a entrada
-    const schema = z.object({
-      refresh_token: z.string().uuid("Invalid refresh token format"),
-    });
+  async execute(data: RefreshTokenDTO) {
+    // 1. Validar dados
+    const { refresh_token } = refreshTokenSchema.parse(data);
 
-    const { refresh_token } = schema.parse(data);
-
-    // 2. Busca o refresh token no banco
+    // 2. Buscar token existente
     const storedToken = await this.refreshTokensRepository.findByToken(
       refresh_token
     );
@@ -29,25 +30,25 @@ export class RefreshTokenService {
       throw new AppError("Refresh token not found", 401);
     }
 
-    // 3. Verifica a expiração
-    const isExpired = storedToken.expiresAt < new Date();
-    if (isExpired) {
+    // 3. Validar expiração
+    if (storedToken.expiresAt < new Date()) {
       throw new AppError("Refresh token expired", 401);
     }
 
-    // 4. Busca o usuário
+    // 4. Buscar usuário dono do token
     const user = await this.usersRepository.findById(storedToken.userId);
+
     if (!user) {
       throw new AppError("User no longer exists", 404);
     }
 
-    // 5. Gera um novo JWT
-    const jwtToken = sign({ role: user.role }, authConfig.jwt.secret, {
+    // 5. Gerar novo Access Token
+    const access_token = sign({ role: user.role }, authConfig.jwt.secret, {
       subject: user.id,
       expiresIn: authConfig.jwt.expiresIn,
     });
 
-    // 6. Cria um novo refresh token
+    // 6. Criar novo Refresh Token
     const newRefreshToken = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 dias
 
@@ -57,18 +58,15 @@ export class RefreshTokenService {
       expiresAt,
     });
 
-    // 7. Apaga o refresh token antigo
+    // 7. Remover token antigo
     await this.refreshTokensRepository.deleteById(storedToken.id);
 
-    // 8. Retorna para o front
+    // 8. Retornar dados seguros
+    const { password: _, ...safeUser } = user;
+
     return {
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-      access_token: jwtToken,
+      user: safeUser,
+      access_token,
       refresh_token: createdRefreshToken.token,
     };
   }

@@ -2,14 +2,12 @@ import { Router } from "express";
 import { SessionsController } from "@/controllers/sessions-controller";
 import { RefreshTokenController } from "@/controllers/refresh-token-controller";
 
-const sessionsRoutes = Router();
+const authRoutes = Router();
 
 const sessionsController = new SessionsController();
 const refreshTokenController = new RefreshTokenController();
 
-sessionsRoutes.post("/", sessionsController.create);
+authRoutes.post("/login", sessionsController.create);
+authRoutes.post("/refresh", refreshTokenController.handle);
 
-// Nova rota para Refresh Token
-sessionsRoutes.post("/refresh", refreshTokenController.handle);
-
-export { sessionsRoutes };
+export { authRoutes };

@@ -1,36 +1,35 @@
-import { z } from "zod";
+import { hash } from "bcrypt";
 import { UsersRepository } from "@/repositories/users-repository";
 import { AppError } from "@/utils/AppError";
-import { hash } from "bcrypt";
+import { createUserSchema, CreateUserDTO } from "@/schemas/users/user-schema";
 
 export class UserService {
   constructor(private usersRepository: UsersRepository) {}
 
-  async execute(data: { name: string; email: string; password: string }) {
-    const schema = z.object({
-      name: z.string().min(2),
-      email: z.string().email(),
-      password: z.string().min(6),
-    });
+  execute = async (data: CreateUserDTO) => {
+    // 1. Validação com Zod
+    const { name, email, password } = createUserSchema.parse(data);
 
-    const { name, email, password } = schema.parse(data);
+    // 2. Garantir que não exista usuário com o mesmo e-mail
+    const existingUser = await this.usersRepository.findByEmail(email);
 
-    const userWithSameEmail = await this.usersRepository.findByEmail(email);
-
-    if (userWithSameEmail) {
+    if (existingUser) {
       throw new AppError("User with same e-mail already exists", 400);
     }
 
+    // 3. Hash da senha
     const hashedPassword = await hash(password, 8);
 
+    // 4. Criar usuário
     const user = await this.usersRepository.create({
       name,
       email,
       password: hashedPassword,
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    // 5. Remover senha antes de retornar
+    const { password: _, ...safeUser } = user;
 
-    return userWithoutPassword;
-  }
+    return safeUser;
+  };
 }

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PrismaUsersRepository } from "@/repositories/prisma/prisma-users-repository";
 import { UserService } from "@/services/user-service";
+import { created } from "@/utils/response";
 
 class UsersController {
   create = async (request: Request, response: Response) => {
@@ -9,7 +10,9 @@ class UsersController {
 
     const user = await service.execute(request.body);
 
-    return response.status(201).json(user);
+    return response
+      .status(201)
+      .json(created("User created successfully", user));
   };
 }
 

@@ -1,8 +1,8 @@
-import { z } from "zod";
 import { AppError } from "@/utils/AppError";
 import { DeliveriesRepository } from "@/repositories/deliveries-repository";
 import { DeliveryLogsRepository } from "@/repositories/delivery-logs-repository";
 import { DeliveryStatus } from "@prisma/client";
+import { createDeliveryLogSchema } from "@/schemas/deliveries-logs/delivery-log-schema";
 
 export class DeliveryLogService {
   constructor(
@@ -15,13 +15,8 @@ export class DeliveryLogService {
     description: string;
     performedBy: string;
   }) {
-    const schema = z.object({
-      delivery_id: z.string().uuid(),
-      description: z.string().min(1),
-      performedBy: z.string().uuid(),
-    });
-
-    const { delivery_id, description, performedBy } = schema.parse(data);
+    const { delivery_id, description, performedBy } =
+      createDeliveryLogSchema.parse(data);
 
     const delivery = await this.deliveriesRepository.findById(delivery_id);
 
@@ -40,7 +35,7 @@ export class DeliveryLogService {
     return this.deliveryLogsRepository.create({
       deliveryId: delivery_id,
       description,
-      performedBy, // <<< AQUI!
+      performedBy,
     });
   }
 }
