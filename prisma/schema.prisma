@@ -46,12 +46,17 @@ model Delivery {
   updatedAt   DateTime?      @updatedAt @map("updated_at")
 
   // Relação com usuário (Muitas entregas → 1 usuário)
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Relação com logs (1 entrega → muitos logs)
   logs DeliveryLog[]
 
   @@map("deliveries")
+
+  // ÍNDICES
+  @@index([userId])
+  @@index([status])
+  @@index([userId, status])
 }
 
 model DeliveryLog {
@@ -62,10 +67,13 @@ model DeliveryLog {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
 
-  delivery Delivery @relation(fields: [deliveryId], references: [id])
-  user     User     @relation("UserDeliveryLogs", fields: [performedBy], references: [id])
+  delivery Delivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  user     User     @relation("UserDeliveryLogs", fields: [performedBy], references: [id], onDelete: Cascade)
 
   @@map("delivery_logs")
+
+  // ÍNDICES
+  @@index([deliveryId])
 }
 
 
