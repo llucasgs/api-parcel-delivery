@@ -1,6 +1,6 @@
 // src/repositories/prisma/prisma-deliveries-repository.ts
 import { prisma } from "@/database/prisma";
-import { DeliveriesRepository } from "./deliveries-repository";
+import { DeliveriesRepository } from "../deliveries-repository";
 import { Delivery, Prisma, DeliveryStatus } from "@prisma/client";
 
 export class PrismaDeliveriesRepository implements DeliveriesRepository {

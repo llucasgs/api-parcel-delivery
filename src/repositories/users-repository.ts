@@ -10,4 +10,4 @@ export interface UsersRepository {
   }): Promise<User>;
 }
 
-// Não criamos um SessionsRepository porque o UsersRepository já serve. Mais simples. Mais limpo. Mais claro. Por quê? Porque, na prática, o login só precisa de buscar usuário pelo e-mail, por isso reaproveitamos.
+// Não criamos um SessionsRepository porque o UsersRepository já serve. Mais simples. Mais limpo. Mais claro. Por quê? Porque, na prática, o login só precisa buscar usuário pelo e-mail e senha, por isso reaproveitamos.

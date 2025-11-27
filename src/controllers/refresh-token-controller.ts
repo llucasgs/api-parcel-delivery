@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { RefreshTokenService } from "@/services/refresh-token-service";
 
-import { PrismaUsersRepository } from "@/repositories/prisma-users-repository";
-import { PrismaRefreshTokensRepository } from "@/repositories/prisma-refresh-tokens-repository";
+import { PrismaUsersRepository } from "@/repositories/prisma/prisma-users-repository";
+import { PrismaRefreshTokensRepository } from "@/repositories/prisma/prisma-refresh-tokens-repository";
 
 export class RefreshTokenController {
   handle = async (request: Request, response: Response) => {

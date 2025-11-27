@@ -1,5 +1,5 @@
 import { prisma } from "@/database/prisma";
-import { RefreshTokensRepository } from "./refresh-tokens-repository";
+import { RefreshTokensRepository } from "../refresh-tokens-repository";
 import { RefreshToken } from "@prisma/client";
 
 export class PrismaRefreshTokensRepository implements RefreshTokensRepository {

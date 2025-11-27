@@ -1,5 +1,5 @@
 import { prisma } from "@/database/prisma";
-import { DeliveryLogsRepository } from "./delivery-logs-repository";
+import { DeliveryLogsRepository } from "../delivery-logs-repository";
 import { DeliveryLog } from "@prisma/client";
 
 export class PrismaDeliveryLogsRepository implements DeliveryLogsRepository {

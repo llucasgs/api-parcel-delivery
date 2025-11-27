@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaDeliveriesRepository } from "@/repositories/prisma-deliveries-repository";
-import { PrismaDeliveryLogsRepository } from "@/repositories/prisma-delivery-logs-repository";
+import { PrismaDeliveriesRepository } from "@/repositories/prisma/prisma-deliveries-repository";
+import { PrismaDeliveryLogsRepository } from "@/repositories/prisma/prisma-delivery-logs-repository";
 
 import { DeliveryLogService } from "@/services/delivery-log-service";
 import { ShowDeliveryLogsService } from "@/services/show-delivery-logs-service";

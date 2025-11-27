@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaUsersRepository } from "@/repositories/prisma-users-repository";
-import { PrismaRefreshTokensRepository } from "@/repositories/prisma-refresh-tokens-repository";
+import { PrismaUsersRepository } from "@/repositories/prisma/prisma-users-repository";
+import { PrismaRefreshTokensRepository } from "@/repositories/prisma/prisma-refresh-tokens-repository";
 import { SessionsService } from "@/services/sessions-service";
 
 class SessionsController {
