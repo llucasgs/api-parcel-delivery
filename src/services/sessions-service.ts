@@ -4,9 +4,13 @@ import { sign } from "jsonwebtoken";
 import { UsersRepository } from "@/repositories/users-repository";
 import { AppError } from "@/utils/AppError";
 import { authConfig } from "@/config/auth";
+import { RefreshTokensRepository } from "@/repositories/refresh-tokens-repository";
 
 export class SessionsService {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(
+    private usersRepository: UsersRepository,
+    private refreshTokensRepository: RefreshTokensRepository
+  ) {}
 
   async execute(data: { email: string; password: string }) {
     const schema = z.object({
@@ -30,7 +34,7 @@ export class SessionsService {
       throw new AppError("Invalid e-mail or password", 401);
     }
 
-    // 3. Gerar token
+    // 3. Gerar Access Token
     const { secret, expiresIn } = authConfig.jwt;
 
     const token = sign({ role: user.role }, secret, {
@@ -38,12 +42,23 @@ export class SessionsService {
       expiresIn,
     });
 
-    // 4. Remover senha
+    // 4. Gerar Refresh Token
+    const refresh_token = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 dias
+
+    await this.refreshTokensRepository.create({
+      userId: user.id,
+      token: refresh_token,
+      expiresAt,
+    });
+
+    // 5. Remover senha
     const { password: _, ...userWithoutPassword } = user;
 
     return {
       user: userWithoutPassword,
-      token,
+      access_token: token,
+      refresh_token,
     };
   }
 }

@@ -18,6 +18,7 @@ class DeliveryLogsController {
     const log = await service.execute({
       delivery_id: request.body.delivery_id,
       description: request.body.description,
+      performedBy: request.user!.id,
     });
 
     return response.status(201).json(log);

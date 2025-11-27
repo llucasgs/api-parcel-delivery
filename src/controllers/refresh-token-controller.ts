@@ -1,22 +1,23 @@
 import { Request, Response } from "express";
+import { RefreshTokenService } from "@/services/refresh-token-service";
+
 import { PrismaUsersRepository } from "@/repositories/prisma-users-repository";
 import { PrismaRefreshTokensRepository } from "@/repositories/prisma-refresh-tokens-repository";
-import { SessionsService } from "@/services/sessions-service";
 
-class SessionsController {
-  create = async (request: Request, response: Response) => {
+export class RefreshTokenController {
+  handle = async (request: Request, response: Response) => {
+    const { refresh_token } = request.body;
+
     const usersRepository = new PrismaUsersRepository();
     const refreshTokensRepository = new PrismaRefreshTokensRepository();
 
-    const service = new SessionsService(
+    const refreshTokenService = new RefreshTokenService(
       usersRepository,
       refreshTokensRepository
     );
 
-    const result = await service.execute(request.body);
+    const result = await refreshTokenService.execute({ refresh_token });
 
-    return response.status(201).json(result);
+    return response.json(result);
   };
 }
-
-export { SessionsController };

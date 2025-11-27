@@ -10,13 +10,18 @@ export class DeliveryLogService {
     private deliveryLogsRepository: DeliveryLogsRepository
   ) {}
 
-  async execute(data: { delivery_id: string; description: string }) {
+  async execute(data: {
+    delivery_id: string;
+    description: string;
+    performedBy: string;
+  }) {
     const schema = z.object({
       delivery_id: z.string().uuid(),
       description: z.string().min(1),
+      performedBy: z.string().uuid(),
     });
 
-    const { delivery_id, description } = schema.parse(data);
+    const { delivery_id, description, performedBy } = schema.parse(data);
 
     const delivery = await this.deliveriesRepository.findById(delivery_id);
 
@@ -35,6 +40,7 @@ export class DeliveryLogService {
     return this.deliveryLogsRepository.create({
       deliveryId: delivery_id,
       description,
+      performedBy, // <<< AQUI!
     });
   }
 }

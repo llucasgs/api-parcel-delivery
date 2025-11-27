@@ -19,16 +19,20 @@ enum DeliveryStatus {
 }
 
 model User {
-  id         String     @id @default(uuid())
-  name       String
-  email      String     @unique
-  password   String
-  role       UserRole   @default(customer)
-  createdAt  DateTime   @default(now()) @map("created_at")
-  updatedAt  DateTime?  @updatedAt @map("updated_at")
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      UserRole  @default(customer)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
-  // Relação com entregas
-  deliveries Delivery[]
+  // Relação com entregas (1 usuário → Muitas entregas)
+  deliveries    Delivery[]
+  // Relação com RefreshToken (1 usuário → Muitos RefreshToken)
+  refreshTokens RefreshToken[]
+  // Relação com DeliveryLog
+  deliveryLogs    DeliveryLog[] @relation("UserDeliveryLogs")
 
   @@map("users")
 }
@@ -41,7 +45,7 @@ model Delivery {
   createdAt   DateTime       @default(now()) @map("created_at")
   updatedAt   DateTime?      @updatedAt @map("updated_at")
 
-  // Relação com usuário (Muitos entregas → 1 usuário)
+  // Relação com usuário (Muitas entregas → 1 usuário)
   user User @relation(fields: [userId], references: [id])
 
   // Relação com logs (1 entrega → muitos logs)
@@ -54,11 +58,26 @@ model DeliveryLog {
   id          String    @id @default(uuid())
   description String
   deliveryId  String    @map("delivery_id")
+  performedBy String    @map("performed_by")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
 
-  // Relação com entrega (muitos logs → 1 entrega)
   delivery Delivery @relation(fields: [deliveryId], references: [id])
+  user     User     @relation("UserDeliveryLogs", fields: [performedBy], references: [id])
 
   @@map("delivery_logs")
+}
+
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  expiresAt DateTime @map("expires_at")
+
+  // Relação com usuário (Muitos RefreshToken → 1 usuário)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
 }

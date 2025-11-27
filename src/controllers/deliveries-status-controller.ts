@@ -16,6 +16,7 @@ class DeliveriesStatusController {
     const result = await service.execute({
       id: request.params.id,
       status: request.body.status,
+      performedBy: request.user!.id,
     });
 
     return response.json(result);

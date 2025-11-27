@@ -6,6 +6,7 @@ export class PrismaDeliveryLogsRepository implements DeliveryLogsRepository {
   async create(data: {
     deliveryId: string;
     description: string;
+    performedBy: string;
   }): Promise<DeliveryLog> {
     return prisma.deliveryLog.create({ data });
   }

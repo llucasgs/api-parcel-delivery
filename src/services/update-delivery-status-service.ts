@@ -10,14 +10,17 @@ export class UpdateDeliveryStatusService {
     private logsRepository: DeliveryLogsRepository
   ) {}
 
-  async execute(data: { id: string; status: string }) {
-    // aqui o Zod garante que o status é um dos valores do enum
+  async execute(data: { id: string; status: string; performedBy: string }) {
     const schema = z.object({
       id: z.string().uuid(),
       status: z.nativeEnum(DeliveryStatus),
     });
 
-    const { id, status } = schema.parse(data); // status agora é DeliveryStatus
+    // Valida apenas id e status
+    const { id, status } = schema.parse(data);
+
+    // Pega performedBy diretamente do data
+    const { performedBy } = data;
 
     const delivery = await this.deliveriesRepository.findById(id);
 
@@ -27,10 +30,10 @@ export class UpdateDeliveryStatusService {
 
     const updated = await this.deliveriesRepository.updateStatus(id, status);
 
-    // cria log automático
     await this.logsRepository.create({
       deliveryId: id,
-      description: status, // string mesmo, porque o enum vira string
+      description: status,
+      performedBy,
     });
 
     return updated;

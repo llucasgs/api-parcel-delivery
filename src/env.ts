@@ -4,6 +4,7 @@ import { z } from "zod";
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   JWT_SECRET: z.string().min(1, "JWT_SECRET cannot be empty"),
+  JWT_EXPIRES_IN: z.string().min(2),
   // Adicione outras variáveis aqui quando precisar
 });
 
