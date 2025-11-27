@@ -1,47 +1,33 @@
+// deliveries-controller.ts
 import { Request, Response } from "express";
-import { z } from "zod";
-import { prisma } from "@/database/prisma";
-import { AppError } from "@/utils/AppError";
+import { DeliveryCreateService } from "@/services/delivery-create-service";
+import { DeliveryListService } from "@/services/delivery-List-Service";
+import { PrismaDeliveriesRepository } from "@/repositories/prisma-deliveries-repository";
+import { PrismaUsersRepository } from "@/repositories/prisma-users-repository";
 
-class DeliveriesController {
-  create = async (request: Request, response: Response) => {
-    const bodySchema = z.object({
-      // ID do usuário (customer) para o qual o pedido vai ser enviado
-      user_id: z
-        .string({ required_error: "The customer user ID is required!" })
-        .uuid(),
-      // Descrição do que está sendo enviado
-      description: z.string({
-        required_error: "A description of what is being sent is required!",
-      }),
-    });
+export class DeliveriesController {
+  async create(request: Request, response: Response) {
+    const deliveriesRepository = new PrismaDeliveriesRepository();
+    const usersRepository = new PrismaUsersRepository();
 
-    const { user_id, description } = bodySchema.parse(request.body);
+    const service = new DeliveryCreateService(
+      deliveriesRepository,
+      usersRepository
+    );
 
-    await prisma.delivery.create({
-      data: {
-        userId: user_id,
-        description,
-      },
-    });
+    const { user_id, description } = request.body;
 
-    return response.status(201).json();
-  };
+    const delivery = await service.execute({ user_id, description });
 
-  index = async (request: Request, response: Response) => {
-    const deliveries = await prisma.delivery.findMany({
-      include: {
-        user: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-      },
-    });
+    return response.status(201).json(delivery);
+  }
+
+  async index(request: Request, response: Response) {
+    const deliveriesRepository = new PrismaDeliveriesRepository();
+    const service = new DeliveryListService(deliveriesRepository);
+
+    const deliveries = await service.execute();
 
     return response.json(deliveries);
-  };
+  }
 }
-
-export { DeliveriesController };

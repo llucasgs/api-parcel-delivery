@@ -1,45 +1,24 @@
 import { Request, Response } from "express";
-import { z } from "zod";
-import { prisma } from "@/database/prisma";
-import { AppError } from "@/utils/AppError";
+import { PrismaDeliveriesRepository } from "@/repositories/prisma-deliveries-repository";
+import { PrismaDeliveryLogsRepository } from "@/repositories/prisma-delivery-logs-repository";
+import { UpdateDeliveryStatusService } from "@/services/update-delivery-status-service";
 
 class DeliveriesStatusController {
   update = async (request: Request, response: Response) => {
-    const paramsSchema = z.object({
-      // ID da entrega que será atualizada
-      id: z.string({ required_error: "Deliveries ID is required!" }).uuid(),
+    const deliveriesRepository = new PrismaDeliveriesRepository();
+    const logsRepository = new PrismaDeliveryLogsRepository();
+
+    const service = new UpdateDeliveryStatusService(
+      deliveriesRepository,
+      logsRepository
+    );
+
+    const result = await service.execute({
+      id: request.params.id,
+      status: request.body.status,
     });
 
-    const bodySchema = z.object({
-      status: z.enum(["processing", "shipped", "delivered"]),
-    });
-
-    const { id } = paramsSchema.parse(request.params);
-    const { status } = bodySchema.parse(request.body);
-
-    const delivery = await prisma.delivery.findUnique({ where: { id } });
-
-    if (!delivery) {
-      throw new AppError("Delivery not found", 404);
-    }
-
-    await prisma.delivery.update({
-      data: {
-        status,
-      },
-      where: {
-        id,
-      },
-    });
-
-    await prisma.deliveryLog.create({
-      data: {
-        deliveryId: id,
-        description: status,
-      },
-    });
-
-    return response.json();
+    return response.json(result);
   };
 }
 

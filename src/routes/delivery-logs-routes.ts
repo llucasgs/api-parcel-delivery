@@ -4,20 +4,22 @@ import { ensureAuthenticated } from "@/middlewares/ensure-authenticated";
 import { verifyUserAuthorization } from "@/middlewares/verifyUserAuthorization";
 
 const deliveryLogsRoutes = Router();
-const deliveryLogsController = new DeliveryLogsController();
+const controller = new DeliveryLogsController();
 
+// criar log → apenas sale
 deliveryLogsRoutes.post(
   "/",
   ensureAuthenticated,
   verifyUserAuthorization(["sale"]),
-  deliveryLogsController.create
+  controller.create
 );
 
+// listar logs da entrega → sale e customer
 deliveryLogsRoutes.get(
-  "/:delivery_id/show",
+  "/:delivery_id",
   ensureAuthenticated,
   verifyUserAuthorization(["sale", "customer"]),
-  deliveryLogsController.show
+  controller.show
 );
 
 export { deliveryLogsRoutes };

@@ -8,12 +8,26 @@ const deliveriesRoutes = Router();
 const deliveriesController = new DeliveriesController();
 const deliveriesStatusController = new DeliveriesStatusController();
 
-// Protected route
-deliveriesRoutes.use(ensureAuthenticated, verifyUserAuthorization(["sale"]));
+// ROTAS INDIVIDUALMENTE PROTEGIDAS
+deliveriesRoutes.post(
+  "/",
+  ensureAuthenticated,
+  verifyUserAuthorization(["sale"]),
+  deliveriesController.create
+);
 
-deliveriesRoutes.post("/", deliveriesController.create);
-deliveriesRoutes.get("/", deliveriesController.index);
+deliveriesRoutes.get(
+  "/",
+  ensureAuthenticated,
+  verifyUserAuthorization(["sale"]),
+  deliveriesController.index.bind(deliveriesController)
+);
 
-deliveriesRoutes.patch("/:id/status", deliveriesStatusController.update);
+deliveriesRoutes.patch(
+  "/:id/status",
+  ensureAuthenticated,
+  verifyUserAuthorization(["sale"]),
+  deliveriesStatusController.update
+);
 
 export { deliveriesRoutes };
