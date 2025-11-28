@@ -5,16 +5,24 @@ const config: Config = {
   testEnvironment: "node",
 
   // onde estão os testes
-  roots: ["<rootDir>/src", "<rootDir>/tests"],
+  testMatch: ["<rootDir>/tests/**/*.spec.ts"],
 
-  // quais arquivos são testes
-  testMatch: ["**/*.spec.ts", "**/*.test.ts"],
-
-  // suporte ao alias "@/"
+  // suporte aos paths @/alguma-coisa
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
 
+  // configuração correta do ts-jest (sem globals)
+  transform: {
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        tsconfig: "tsconfig.json",
+      },
+    ],
+  },
+
+  bail: true,
   clearMocks: true,
   coverageProvider: "v8",
 };

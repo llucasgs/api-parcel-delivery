@@ -16,5 +16,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src"] //Adicionado depois para fazer um teste
+  "include": ["src", "tests"] //Adicionado depois para fazer um teste
 }
