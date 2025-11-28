@@ -6,7 +6,7 @@ import { createUserSchema, CreateUserDTO } from "@/schemas/users/user-schema";
 export class UserService {
   constructor(private usersRepository: UsersRepository) {}
 
-  execute = async (data: CreateUserDTO) => {
+  async execute(data: CreateUserDTO) {
     // 1. Validação com Zod
     const { name, email, password } = createUserSchema.parse(data);
 
@@ -31,5 +31,5 @@ export class UserService {
     const { password: _, ...safeUser } = user;
 
     return safeUser;
-  };
+  }
 }
