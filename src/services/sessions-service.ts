@@ -12,6 +12,8 @@ import {
   SessionLoginDTO,
 } from "@/schemas/sessions/session-schema";
 
+import { randomUUID } from "crypto";
+
 export class SessionsService {
   constructor(
     private usersRepository: UsersRepository,
@@ -43,7 +45,7 @@ export class SessionsService {
     });
 
     // 5. Gerar Refresh Token
-    const refresh_token = crypto.randomUUID();
+    const refresh_token = randomUUID();
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 dias
 
     await this.refreshTokensRepository.create({
