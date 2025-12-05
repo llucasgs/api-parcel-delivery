@@ -1,4 +1,3 @@
-// src/repositories/deliveries-repository.ts
 import { Delivery, Prisma, DeliveryStatus } from "@prisma/client";
 
 export interface DeliveriesRepository {
