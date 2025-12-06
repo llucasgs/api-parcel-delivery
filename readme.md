@@ -1,7 +1,6 @@
 # 📦🚚 Parcel Delivery API
 
-API REST para gestão de entregas, construída com **Node.js + TypeScript + Prisma + JWT + Zod.**
-Focada em segurança, escalabilidade, arquitetura limpa e testes automatizados.
+API REST para gestão de entregas, construída com **Node.js + TypeScript + Prisma + JWT + Zod** e focada em segurança, escalabilidade, arquitetura limpa e testes automatizados.
 
 É uma API robusta, usada como base de sistemas reais de logística e entregas.
 
@@ -26,7 +25,7 @@ Focada em segurança, escalabilidade, arquitetura limpa e testes automatizados.
 
 ---
 
-# 📘 Resumo
+## 📘 Resumo
 
 Imagine que você tem uma empresa de entregas.  
 A API **Parcel Delivery** é o “cérebro” responsável por:
@@ -39,11 +38,11 @@ A API **Parcel Delivery** é o “cérebro” responsável por:
 - controle de acesso por papéis (RBAC)
 - renovação de tokens (refresh token)
 
-Ela funciona como uma _central logística digital_.
+Ela funciona como uma _central logística digital._
 
 ---
 
-# 🎯 Objetivo do Projeto
+## 🎯 Objetivo do Projeto
 
 Esta API foi construída para:
 
@@ -55,7 +54,7 @@ Esta API foi construída para:
 
 ---
 
-# 🏛️ Arquitetura do Projeto
+## 🏛️ Arquitetura do Projeto
 
 ```plaintext
 src/
@@ -79,7 +78,7 @@ Princípios aplicados:
 
 ---
 
-# 🔐 Segurança
+## 🔐 Segurança
 
 ### ✔ JWT de curta duração (Access Token)
 
@@ -101,7 +100,7 @@ Permite renovar sessões sem precisar da senha novamente.
 
 ---
 
-# 🗄️ Banco de Dados (**PostgreSQL** + **Prisma ORM**).
+## 🗄️ Banco de Dados (**PostgreSQL** + **Prisma ORM**).
 
 ### Principais tabelas
 
@@ -119,22 +118,22 @@ Inclui:
 
 ---
 
-# 📦 Funcionalidades da API
+## 📦 Funcionalidades da API
 
-## 👤 Usuários
+### 👤 Usuários
 
 - Cadastro de usuários
 - Login
 - Renovação de sessão via refresh token
 
-## 🚚 Entregas
+### 🚚 Entregas
 
 - Criar entrega (somente `sale`)
 - Listar entregas (somente `sale`)
 - Atualizar status (`processing → shipped → delivered`)
 - Gerar log automaticamente ao mudar status
 
-## 📝 Logs de entrega
+### 📝 Logs de entrega
 
 - Criar logs
 - Listar logs
@@ -143,7 +142,7 @@ Inclui:
 
 ---
 
-# 🔐 Fluxo de Autenticação
+## 🔐 Fluxo de Autenticação
 
 1. Usuário faz login → recebe access_token (15m) e refresh_token (7 dias)
 2. A cada requisição privada → envia Authorization: Bearer <token>
@@ -154,7 +153,7 @@ Inclui:
 
 ---
 
-# 📡 Rotas da API
+## 📡 Rotas da API
 
 | Método | Rota                        | Descrição                   | Permissão       |
 | ------ | --------------------------- | --------------------------- | --------------- |
@@ -169,7 +168,7 @@ Inclui:
 
 ---
 
-# 🔧 Como Executar o Projeto
+## 🔧 Como Executar o Projeto
 
 ### 1. Instale as dependências:
 
@@ -202,7 +201,7 @@ http://localhost:3333
 
 ---
 
-# 🧪 Testes Automatizados
+## 🧪 Testes Automatizados
 
 O projeto possui testes unitários com Jest:
 
@@ -212,7 +211,7 @@ O projeto possui testes unitários com Jest:
 - Mock de crypto.randomUUID
 - Validação de regras de negócio
 
-### 1. Rodar testes:
+### 1. Para rodar os testes:
 
 ```bash
 npm test
@@ -232,7 +231,7 @@ npm run test:coverage
 
 ---
 
-# 📡 Exemplos de Requisição
+## 📡 Exemplos de Requisição
 
 ### Criar usuário:
 
@@ -259,15 +258,22 @@ POST /sessions
 
 ```bash
 {
-  "user": { "id": "...", "name": "Lucas", "role": "customer" },
-  "access_token": "...",
-  "refresh_token": "..."
+	"user": {
+		"id": "1baae719-0a91-4d58-96ab-bc2f9e64b066",
+		"name": "Lucas Garcia e Silva",
+		"email": "lucas@hotmail.com",
+		"role": "sale",
+		"createdAt": "2025-11-22T22:36:22.747Z",
+		"updatedAt": "2025-11-22T22:37:01.236Z"
+	},
+	"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2FsZSIsImlhdCI6MTc2NDI1NTc2NCwiZXhwIjoxNzY0MzQyMTY0LCJzdWIiOiIxYmFhZTcxOS0wYTkxLTRkNTgtOTZhYi1iYzJmOWU2NGIwNjYifQ.n_fVX7ZgFYul94osGhzy4WiUR2r4ope23EiDovHcUNI",
+	"refresh_token": "6aee802f-0d7e-432b-a3b9-f08efa23d5ca"
 }
 ```
 
 ---
 
-# 🧠 Por que esse projeto é especial?
+## 🧠 Por que esse projeto é especial?
 
 Porque segue padrões profissionais usados em empresas modernas:
 
