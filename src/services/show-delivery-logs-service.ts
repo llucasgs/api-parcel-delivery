@@ -24,7 +24,7 @@ export class ShowDeliveryLogsService {
     // Cliente só pode ver entregas dele mesmo
     if (role === "customer" && delivery.userId !== user_id) {
       throw new AppError(
-        "You are not allowed to view logs of another customer's delivery",
+        "Forbidden: customers can only view their own delivery logs",
         403
       );
     }

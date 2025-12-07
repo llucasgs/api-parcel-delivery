@@ -65,25 +65,26 @@ describe("ShowDeliveryLogsService - unit", () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].description).toBe("Saiu para entrega");
+    expect(logsRepository.findManyByDeliveryId).toHaveBeenCalledTimes(1);
   });
 
-  // 2. SUCESSO PARA 'sale' (pode ver qualquer entrega)
-  test("deve retornar logs com sucesso para usuário com role 'sale'", async () => {
+  // 2. SUCESSO PARA "sale" → pode ver qualquer entrega
+  test("deve retornar logs com sucesso quando o usuário for 'sale'", async () => {
     deliveriesRepository.findById.mockResolvedValue(fakeDelivery);
     logsRepository.findManyByDeliveryId.mockResolvedValue(fakeLogs);
 
     const result = await service.execute({
       delivery_id: VALID_DELIVERY_ID,
-      user_id: OTHER_CUSTOMER_ID, // não importa
+      user_id: OTHER_CUSTOMER_ID, // irrelevant
       role: "sale",
     });
 
     expect(result).toHaveLength(1);
-    expect(logsRepository.findManyByDeliveryId).toHaveBeenCalled();
+    expect(logsRepository.findManyByDeliveryId).toHaveBeenCalledTimes(1);
   });
 
   // 3. ENTREGA NÃO EXISTE
-  test("deve falhar se a entrega não existir", async () => {
+  test("deve falhar caso a entrega não exista", async () => {
     deliveriesRepository.findById.mockResolvedValue(null);
 
     await expect(
@@ -95,8 +96,8 @@ describe("ShowDeliveryLogsService - unit", () => {
     ).rejects.toBeInstanceOf(AppError);
   });
 
-  // 4. CUSTOMER NÃO É DONO DA ENTREGA
-  test("deve impedir que um customer veja logs de outra entrega", async () => {
+  // 4. CUSTOMER TENTA VER ENTREGA DE OUTRA PESSOA
+  test("deve bloquear customer tentando acessar logs de entrega de outro usuário", async () => {
     deliveriesRepository.findById.mockResolvedValue(fakeDelivery);
 
     await expect(
@@ -106,11 +107,11 @@ describe("ShowDeliveryLogsService - unit", () => {
         role: "customer",
       })
     ).rejects.toThrow(
-      "You are not allowed to view logs of another customer's delivery"
+      "Forbidden: customers can only view their own delivery logs"
     );
   });
 
-  // 5. ERRO ZOD
+  // 5. ERRO DE VALIDAÇÃO ZOD — UUID inválido
   test("deve falhar com dados inválidos (Zod)", async () => {
     await expect(
       service.execute({

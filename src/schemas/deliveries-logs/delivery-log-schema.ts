@@ -1,9 +1,11 @@
 import { z } from "zod";
 
 export const createDeliveryLogSchema = z.object({
-  delivery_id: z.string().uuid(),
-  description: z.string().min(1),
-  performedBy: z.string().uuid(),
+  description: z
+    .string({
+      required_error: "Description is required",
+    })
+    .min(1, "Description cannot be empty"),
 });
 
 export type CreateDeliveryLogDTO = z.infer<typeof createDeliveryLogSchema>;

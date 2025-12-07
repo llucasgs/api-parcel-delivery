@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
+
 import { PrismaDeliveriesRepository } from "@/repositories/prisma/prisma-deliveries-repository";
 import { PrismaDeliveryLogsRepository } from "@/repositories/prisma/prisma-delivery-logs-repository";
 
 import { DeliveryLogService } from "@/services/delivery-log-service";
 import { ShowDeliveryLogsService } from "@/services/show-delivery-logs-service";
+
 import { ok, created } from "@/utils/response";
 
 class DeliveryLogsController {
@@ -17,9 +19,10 @@ class DeliveryLogsController {
     );
 
     const log = await service.execute({
-      delivery_id: request.body.delivery_id,
+      delivery_id: request.params.id,
       description: request.body.description,
-      performedBy: request.user!.id,
+      performedBy: request.user!.id, // pegamos do JWT
+      role: request.user!.role, // pegamos do JWT
     });
 
     return response
@@ -37,7 +40,7 @@ class DeliveryLogsController {
     );
 
     const logs = await service.execute({
-      delivery_id: request.params.delivery_id,
+      delivery_id: request.params.id,
       user_id: request.user!.id,
       role: request.user!.role,
     });
