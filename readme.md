@@ -34,7 +34,7 @@ A API **Parcel Delivery** é o “cérebro” responsável por:
 - autenticação
 - criação de entregas
 - alteração de status
-- geração automática de logs
+- geração automática e manual de logs
 - controle de acesso por papéis (RBAC)
 - renovação de tokens (refresh token)
 
@@ -90,7 +90,7 @@ Permite renovar sessões sem precisar da senha novamente.
 
 ### ✔ RBAC — Controle de Acesso Baseado em Função
 
-- `sale` → **vendedor:** pode criar entrega, alterar status, ver todos os logs
+- `sale` → **vendedor:** pode criar entrega, alterar status, criar e ver todos os logs
 - `customer` → **cliente:** só vê suas próprias entregas
 
 ### ✔ Middlewares de segurança
@@ -147,7 +147,7 @@ Inclui:
 1. Usuário faz login → recebe access_token (15m) e refresh_token (7 dias)
 2. A cada requisição privada → envia Authorization: Bearer <token>
 3. Quando o token expira:
-   - cliente chama /sessions/refresh
+   - cliente chama /auth/refresh
    - gera novo access_token
    - refresh antigo é invalidado
 
@@ -155,16 +155,16 @@ Inclui:
 
 ## 📡 Rotas da API
 
-| Método | Rota                        | Descrição                   | Permissão       |
-| ------ | --------------------------- | --------------------------- | --------------- |
-| POST   | /users                      | Criar usuário               | Público         |
-| POST   | /sessions                   | Login                       | Público         |
-| POST   | /sessions/refresh           | Renovar Access Token        | Público         |
-| POST   | /deliveries                 | Criar entrega               | sale            |
-| GET    | /deliveries                 | Listar entregas             | sale            |
-| PATCH  | /deliveries/:id/status      | Atualizar status da entrega | sale            |
-| POST   | /delivery-logs              | Criar log manual            | sale            |
-| GET    | /delivery-logs/:delivery_id | Listar logs de uma entrega  | sale / customer |
+| Método | Rota                   | Descrição                   | Permissão       |
+| ------ | ---------------------- | --------------------------- | --------------- |
+| POST   | /users                 | Criar usuário               | Público         |
+| POST   | /auth/login            | Criar sessão para Login     | Público         |
+| POST   | /auth/refresh          | Renovar Access Token        | Público         |
+| POST   | /deliveries            | Criar entrega               | sale            |
+| GET    | /deliveries            | Listar entregas             | sale            |
+| PATCH  | /deliveries/:id/status | Atualizar status da entrega | sale            |
+| POST   | /deliveries/:id/logs   | Criar log manual p/ entrega | sale            |
+| GET    | /deliveries/:id/logs   | Listar logs de uma entrega  | sale / customer |
 
 ---
 
