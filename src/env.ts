@@ -5,6 +5,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   JWT_SECRET: z.string().min(1, "JWT_SECRET cannot be empty"),
   JWT_EXPIRES_IN: z.string().min(2),
+  PORT: z.coerce.number().default(3333),
   // Adicione outras variáveis aqui quando precisar
 });
 
